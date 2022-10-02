@@ -1,0 +1,79 @@
+Config { 
+
+   -- appearance
+     font =         "xft:Hack Nerd Font:size=17:bold:antialias=true:hinting=true"
+   , additionalFonts = []
+   , bgColor =      "#1e2127"
+   , fgColor =      "#5b6268"
+   , position =     Top
+   , border =       BottomB
+   , borderColor =  "#646464"
+
+   -- layout
+   , sepChar =  "%"   -- delineator between plugin names and straight text
+   , alignSep = "}{"  -- separator between left-right alignment
+   , template = "}{ <fc=#da8548>%multicpu%</fc> | <fc=#ff6c6b>%memory%</fc> | <fc=#98be65>%dynnetwork%</fc> | <fc=#4db5bd>%date%</fc>| <fc=#dAA520>%battery%</fc> | %kbd% "
+   -- , template = " %XMonadLog% }{ <fc=#da8548>%multicpu%</fc> | <fc=#ff6c6b>%memory%</fc> | <fc=#98be65>%dynnetwork%</fc> | <fc=#4db5bd>%date%</fc>| <fc=#dAA520>%battery%</fc> | %kbd% "
+
+
+
+   -- general behavior
+   , lowerOnStart =     True    -- send to bottom of window stack on start
+   , hideOnStart =      False   -- start with window unmapped (hidden)
+   , allDesktops =      True    -- show on all desktops
+   , overrideRedirect = True    -- set the Override Redirect flag (Xlib)
+   , pickBroadest =     False   -- choose widest display (multi-monitor)
+   , persistent =       True    -- enable/disable hiding (True = disabled)
+
+   -- plugins
+   , commands = 
+
+        -- weather monitor
+        [ Run Weather "RJTT" [ "--template", "<skyCondition> | <fc=#4682B4><tempC></fc>°C | <fc=#4682B4><rh></fc>% | <fc=#4682B4><pressure></fc>hPa"
+                             ] 36000
+
+        -- network activity monitor (dynamic interface resolution)
+        , Run DynNetwork     [ "--template" , "\xf0ab <rx>kb \xf0aa <tx>kb"
+                             ] 10
+
+        -- cpu activity monitor
+        , Run MultiCpu       [ "--template" , "Cpu: \xf108  <total0>%|<total1>%"
+                             ] 10
+
+        -- cpu core temperature monitor
+        , Run CoreTemp       [ "--template" , "Temp: <core0>°C|<core1>°C"
+                             ] 50
+                          
+        -- not working
+        , Run Cpu ["-t", "\xf108  cpu: (<total>%)","-H","50","--high","red"] 20
+
+        -- memory usage monitor
+        , Run Memory         [ "--template" ,"Mem: \xf233  <usedratio>%"
+                             ] 10
+
+        -- battery monitor
+        , Run Battery        [ "--template" , "\xf57d <acstatus>"
+                             , "--" -- battery specific options
+                                       -- discharging status
+                                       , "-o"	, "<left>%"
+                                       -- AC "on" status
+                                       , "-O"	, "<fc=#dAA520>Charging</fc>"
+                                       -- charged status
+                                       , "-i"	, "<fc=#006000>Charged</fc>"
+                             ] 50
+
+        -- time and date indicator 
+        --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
+        , Run Date "\xf017  %d %b %Y - %H:%M " "date" 50
+
+        -- keyboard layout indicator
+        , Run Kbd            [ ("us(dvorak)" , "<fc=#00008B>DV</fc>")
+                             , ("us"         , "<fc=#8B0000>US</fc>")
+                             ]
+
+        , Run UnsafeStdinReader
+
+        -- , Run XmonadLog
+
+        ]
+   }
